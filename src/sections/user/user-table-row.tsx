@@ -16,13 +16,15 @@ import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export type UserProps = {
-  id: string;
+  id?: string;
   name: string;
-  role: string;
-  status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
+  display_name: string;
+  about: string;
+  types_id: string;
+  is_public: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+  peopleImages: unknown[];
 };
 
 type UserTableRowProps = {
@@ -51,17 +53,17 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
 
         <TableCell component="th" scope="row">
           <Box gap={2} display="flex" alignItems="center">
-            <Avatar alt={row.name} src={row.avatarUrl} />
+            <Avatar alt={row.name} src={Array.isArray(row.peopleImages) ? row.peopleImages[0] as string : ''} />
             {row.name}
           </Box>
         </TableCell>
 
-        <TableCell>{row.company}</TableCell>
+        <TableCell>{row.display_name}</TableCell>
 
-        <TableCell>{row.role}</TableCell>
+        <TableCell>{row.about}</TableCell>
 
         <TableCell align="center">
-          {row.isVerified ? (
+          {row.types_id ? (
             <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
           ) : (
             '-'
@@ -69,7 +71,7 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         </TableCell>
 
         <TableCell>
-          <Label color={(row.status === 'banned' && 'error') || 'success'}>{row.status}</Label>
+          <Label color={row.created_at ? 'primary' : 'default'}>{row.created_at}</Label>
         </TableCell>
 
         <TableCell align="right">
@@ -77,7 +79,7 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
-      </TableRow>
+      </TableRow >
 
       <Popover
         open={!!openPopover}

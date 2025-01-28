@@ -98,8 +98,8 @@ export function UserView() {
                     <UserTableRow
                       key={row.id}
                       row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      selected={row.id ? table.selected.includes(row.id) : false}
+                      onSelectRow={() => row.id && table.onSelectRow(row.id)}
                     />
                   ))}
 
