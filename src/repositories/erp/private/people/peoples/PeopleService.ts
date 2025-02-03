@@ -1,45 +1,11 @@
-import { Environment } from "src/config-global";
+import { Api } from "../../../../../services/api/index";
 
-import { Api } from "../api/index";
+import type { IPeople, ApiResponse, ApiResponseDetail } from "./Interface.js";
 
-interface IPeople {
-    id: string;
-    name: string;
-    display_name: string;
-    about: string;
-    types_id: string;
-    is_public: boolean;
-    created_at: string;
-    updated_at: string;
-    peopleImages: unknown[];
-}
 
-interface Pagination {
-    total: number;
-    current_page: number;
-    next_page: number | null;
-    last_page: number;
-    per_page: number;
-    has_more_page: boolean;
-}
-
-interface ApiResponse {
-    success: boolean;
-    message: string;
-    data: IPeople[],
-    pagination: Pagination;
-}
-
-interface ApiResponseDetail {
-    success: boolean;
-    message: string;
-    data: IPeople[];
-    pagination: Pagination;
-}
-
-const getAll = async (filter: string, page = 1): Promise<ApiResponse | Error> => {
+const getAll = async (filter: string, per_page: number = 5, page: number = 0): Promise<ApiResponse | Error> => {
     try {
-        const urlRelative = `/erp/private/people/peoples/v1?per_page=${Environment.LIMITE_DE_LINHAS}${page}&name=${filter}&include=peopleImages`;
+        const urlRelative = `/erp/private/people/peoples/v1?per_page=${per_page}&name=${filter}&page=${page + 1}&include=peopleImages`;
         const { data } = await Api.get(urlRelative);
         return data;
     } catch (error) {
@@ -96,6 +62,8 @@ const deleteById = async (id: string): Promise<void | Error> => {
         return new Error((error as { message: string }).message || 'Erro ao apagar o registro.');
     }
 };
+
+
 
 export const PeopleService = {
     getAll,

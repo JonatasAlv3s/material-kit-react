@@ -1,6 +1,4 @@
-import type { UserProps } from './user-table-row';
-
-// ----------------------------------------------------------------------
+import type { IPeople } from "src/repositories/erp/private/people/peoples/Interface";
 
 export const visuallyHidden = {
   border: 0,
@@ -53,7 +51,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: UserProps[];
+  inputData: IPeople[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };

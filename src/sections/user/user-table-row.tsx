@@ -1,4 +1,7 @@
+import type { IPeople } from 'src/repositories/erp/private/people/peoples/Interface';
+
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -9,40 +12,64 @@ import MenuList from '@mui/material/MenuList';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
+import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
+
+import { PeopleService } from 'src/repositories/erp/private/people/peoples/PeopleService';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export type UserProps = {
-  id?: string;
-  name: string;
-  display_name: string;
-  about: string;
-  types_id: string;
-  is_public: boolean;
-  created_at?: string | null;
-  updated_at?: string | null;
-  peopleImages: unknown[];
-};
+
 
 type UserTableRowProps = {
-  row: UserProps;
+  row: IPeople;
   selected: boolean;
   onSelectRow: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
+export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
   }, []);
 
   const handleClosePopover = useCallback(() => {
-    setOpenPopover(null);
+    setTimeout(() => {
+      setOpenPopover(null);
+    }, 100);
   }, []);
+
+  const handleEdit = () => {
+    navigate(`/edit/${row.id}`);
+  };
+
+  const handleDelete = () => {
+    setOpenDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setOpenDialog(false);
+      const result = await PeopleService.deleteById(row.id);
+
+      if (result instanceof Error) {
+        alert(result.message);
+      } else {
+        alert('Registro deletado com sucesso!');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar:', error);
+      alert('Ocorreu um erro ao deletar o registro.');
+    }
+  };
 
   return (
     <>
@@ -104,17 +131,34 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
             },
           }}
         >
-          <MenuItem onClick={handleClosePopover}>
+          <MenuItem onClick={handleEdit}>
             <Iconify icon="solar:pen-bold" />
-            Edit
+            Editar
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Deletar
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Confirmar Exclusão</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza que deseja deletar o usuário <strong>{row.name}</strong>? Essa ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color='inherit'>
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmDelete} color='error' variant='contained'>
+            Deletar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

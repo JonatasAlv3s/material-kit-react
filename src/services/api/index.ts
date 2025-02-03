@@ -1,15 +1,15 @@
 import axios from "axios";
 
-import { Environment } from "src/config-global";
+// import { Environment } from "src/config-global";
 
 import { ErrorInterceptor, ResponseInterceptor } from "./interceptors";
 
 
 
 const Api = axios.create({
-    baseURL: Environment.URL_BASE,
+    baseURL: 'https://n0isrx5qib.execute-api.us-east-1.amazonaws.com',
     headers: {
-        Authorization: `Bearer ${(localStorage.getItem('APP_ACCESS_TOKEN') || '')}`,
+        Authorization: `Bearer 4648|qU295fVDmxbia6xZiJkutIlYgLySshY7YFJfntkN3724e9b2`,
         Accept: `application/json`,
     }
 });
