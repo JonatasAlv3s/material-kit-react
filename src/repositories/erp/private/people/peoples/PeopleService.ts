@@ -30,7 +30,9 @@ const getById = async (id: string): Promise<ApiResponseDetail | Error> => {
 
 const create = async (dados: Omit<IPeople, 'id'>): Promise<string | Error> => {
     try {
+        console.log("Enviando dados para API (create):", dados);
         const { data } = await Api.post<IPeople>('/erp/private/people/peoples/v1', dados);
+        console.log("Resposta da API (create):", data);
 
         if (data && data.id) {
             return String(data.id);

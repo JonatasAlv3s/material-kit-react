@@ -47,7 +47,11 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete }: U
   }, []);
 
   const handleEdit = () => {
-    navigate(`/edit/${row.id}`);
+    if (!row.id) {
+      console.error("Erro: Id não encontrado.");
+      return;
+    }
+    navigate(`/user/${row.id}`);
   };
 
   const handleDelete = () => {

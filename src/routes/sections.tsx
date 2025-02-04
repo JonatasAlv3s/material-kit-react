@@ -47,6 +47,7 @@ export function Router() {
         { element: <HomePage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'add-user', element: <PeopleDetail /> },
+        { path: 'user/:id', element: < PeopleDetail /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],
