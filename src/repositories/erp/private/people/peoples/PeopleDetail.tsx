@@ -246,7 +246,7 @@ export const PeopleDetail: React.FC = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                <Button onClick={() => formRef.current?.submitForm()} variant="contained" color="primary" >
+                <Button sx={{ marginRight: 2 }} onClick={() => formRef.current?.submitForm()} variant="contained" color="primary" >
                     Salvar
                 </Button>
                 <Button onClick={() => navigate(-1)} variant="outlined">

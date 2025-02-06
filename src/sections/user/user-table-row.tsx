@@ -1,3 +1,4 @@
+import type { ICity } from 'src/repositories/erp/private/people/cities/Interface';
 import type { IPeople } from 'src/repositories/erp/private/people/peoples/Interface';
 
 import { useState, useCallback } from 'react';
@@ -24,7 +25,7 @@ import { Iconify } from 'src/components/iconify';
 
 
 type UserTableRowProps = {
-  row: IPeople;
+  row: Partial<IPeople & ICity>;
   selected: boolean;
   onSelectRow: () => void;
   onEdit: () => void;
@@ -61,7 +62,12 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete }: U
   const handleConfirmDelete = async () => {
     try {
       setOpenDialog(false);
-      const result = await PeopleService.deleteById(row.id);
+      let result;
+      if (row.id) {
+        result = await PeopleService.deleteById(row.id);
+      } else {
+        throw new Error('Id is undefined');
+      }
 
       if (result instanceof Error) {
         alert(result.message);
