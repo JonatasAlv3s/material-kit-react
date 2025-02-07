@@ -17,6 +17,7 @@ type UserTableHeadProps = {
   onSort: (id: string) => void;
   headLabel: Record<string, any>[];
   onSelectAllRows: (checked: boolean) => void;
+  showCheckbox?: boolean;
 };
 
 export function UserTableHead({
@@ -27,42 +28,52 @@ export function UserTableHead({
   headLabel,
   numSelected,
   onSelectAllRows,
+  showCheckbox = true,
 }: UserTableHeadProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onSelectAllRows(event.target.checked)
-            }
-          />
-        </TableCell>
-
-        {headLabel.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.align || 'left'}
-            sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth }}
-          >
-            <TableSortLabel
-              hideSortIcon
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={() => onSort(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box sx={{ ...visuallyHidden }}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
+        {showCheckbox && (
+          <TableCell padding="checkbox" sx={{ width: 48 }}>
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                onSelectAllRows(event.target.checked)
+              }
+            />
           </TableCell>
-        ))}
+        )}
+
+        {
+          headLabel.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.align || 'left'}
+              sortDirection={orderBy === headCell.id ? order : false}
+              sx={{
+                width: headCell.width || 'auto',  // Garantir largura responsiva
+                minWidth: headCell.minWidth || 120, // Definir largura mínima
+                textAlign: headCell.align || 'left', // Alinhamento com base na propriedade
+                fontWeight: 'bold', // Tornar os títulos em negrito para destaque
+              }}
+            >
+              <TableSortLabel
+                hideSortIcon
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={() => onSort(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box sx={{ ...visuallyHidden }}>
+                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))
+        }
       </TableRow>
     </TableHead>
   );

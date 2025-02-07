@@ -4,10 +4,9 @@ import type { ICity, ICities } from "./Interface";
 
 
 
-const getAll = async (page: number = 1, filter: string = ''): Promise<ICities | Error> => {
+const getAll = async (page: number = 1, filter: string = '', per_page: number = 5): Promise<ICities | Error> => {
     try {
 
-        const per_page = 10;
         const urlRelativa = `/erp/private/people/cities/v1?per_page=${per_page}&page=${page}&search=${filter}&include=state`;
         const { data } = await Api.get(urlRelativa);
 

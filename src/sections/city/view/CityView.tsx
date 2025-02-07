@@ -2,7 +2,7 @@ import type { ICity, ICities } from "src/repositories/erp/private/people/cities/
 
 import { useState, useEffect, useCallback } from "react";
 
-import { Box, Card, Table, TableBody, Typography, TableContainer, TablePagination } from "@mui/material";
+import { Box, Card, Table, TableRow, TableBody, TableCell, Typography, TableContainer, TablePagination } from "@mui/material";
 
 import { DashboardContent } from "src/layouts/dashboard";
 import { CityService } from "src/repositories/erp/private/people/cities/CityService";
@@ -10,9 +10,9 @@ import { CityService } from "src/repositories/erp/private/people/cities/CityServ
 import { Scrollbar } from "src/components/scrollbar";
 
 import { TableNoData } from "src/sections/user/table-no-data";
-import { UserTableRow } from "src/sections/user/user-table-row";
 import { UserTableHead } from "src/sections/user/user-table-head";
 import { UserTableToolbar } from "src/sections/user/user-table-toolbar";
+
 
 export const CityPage = () => {
     const table = useTable();
@@ -25,7 +25,7 @@ export const CityPage = () => {
     const fetchCities = useCallback(async () => {
         setLoading(true);
 
-        const response = await CityService.getAll(table.page + 1, filterName);
+        const response = await CityService.getAll(table.page + 1, filterName, table.rowsPerPage);
 
         if (response instanceof Error) {
             console.error(response.message);
@@ -34,7 +34,7 @@ export const CityPage = () => {
             setPagination(response.pagination);
         }
         setLoading(false);
-    }, [filterName, table.page]);
+    }, [filterName, table.page, table.rowsPerPage]);
 
     useEffect(() => {
         fetchCities();
@@ -68,17 +68,16 @@ export const CityPage = () => {
                                 onSelectAllRows={(checked) =>
                                     table.onSelectAllRows(
                                         checked,
-                                        cities.map((city) => city.id)
+                                        cities.map((city) => city.name)
                                     )
                                 }
                                 headLabel={[
-                                    { id: 'id', label: 'ID' },
                                     { id: 'name', label: 'Cidade' },
-                                    { id: 'states_id', label: 'ID do Estado' },
                                     { id: 'state', label: 'Estado' },
-                                    { id: 'ibge', label: 'Código IBGE' },
-                                    { id: 'slug', label: 'Slug' },
+                                    { id: 'ibge', label: 'IBGE' },
+                                    { id: 'initials', label: 'Sigla' },
                                 ]}
+                                showCheckbox={false}
                             />
                             <TableBody>
                                 {loading ? (
@@ -87,19 +86,15 @@ export const CityPage = () => {
                                     </Typography>
                                 ) : (
                                     cities.map((city) => (
-                                        <UserTableRow
-                                            key={city.id}
-                                            row={{
-                                                ...city,
-                                                state: city.state
-                                            }}
-                                            selected={table.selected.includes(city.id)}
-                                            onSelectRow={() => table.onSelectRow(city.id)}
-                                            onEdit={() => {/* handle edit */ }}
-                                            onDelete={() => {/* handle delete */ }}
-                                        />
+                                        <TableRow key={city.id}>
+                                            <TableCell align="left">{city.name}</TableCell>
+                                            <TableCell align="left">{city.state.name}</TableCell>
+                                            <TableCell>{city.ibge}</TableCell>
+                                            <TableCell>{city.state.initials}</TableCell>
+                                        </TableRow>
                                     ))
                                 )}
+
 
                                 {notFound && <TableNoData searchQuery={filterName} />}
                             </TableBody>
@@ -113,7 +108,7 @@ export const CityPage = () => {
                     count={pagination ? pagination.total : 0}
                     rowsPerPage={pagination ? pagination.per_page : table.rowsPerPage}
                     onPageChange={(_, newPage) => table.onChangePage(_, newPage)}
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5, 10, 15]}
                     onRowsPerPageChange={table.onChangeRowsPerPage}
                 />
             </Card>

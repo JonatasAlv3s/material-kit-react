@@ -4,12 +4,24 @@ import * as yup from 'yup';
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { Box, Grid, Button, Checkbox, Typography, LinearProgress, FormControlLabel } from "@mui/material";
+import {
+    Box,
+    Grid,
+    Button,
+    Checkbox,
+    TextField,
+    Typography,
+    Autocomplete,
+    LinearProgress,
+    FormControlLabel,
+    CircularProgress
+} from "@mui/material";
 
 import { DashboardContent } from "src/layouts/dashboard";
 import { VForm, UseVForm, TextFieldComponent } from "src/repositories/forms";
 
 import { PeopleService } from "./PeopleService";
+import { CitySearch } from "./components/CitySearch";
 
 
 
@@ -39,6 +51,7 @@ const formValidationSchema: yup.Schema<IFormData> = yup.object().shape({
 });
 
 export const PeopleDetail: React.FC = () => {
+    const { cities, loadingCity, cityName, setCityName, fetchCities, selectedCity, setSelectedCity } = CitySearch();
     const { id = 'novo' } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { formRef } = UseVForm();
@@ -232,6 +245,38 @@ export const PeopleDetail: React.FC = () => {
                     </Grid>
                     <Grid container item direction="row" spacing={2} sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={6}>
+                            <Autocomplete
+                                value={selectedCity}
+                                onChange={(_, newValue) => {
+                                    console.log(newValue);
+                                    //setSelectedCity(newValue);
+                                    //setCityName(newValue ? newValue.name : '');
+                                }}
+                                fullWidth
+                                options={cities}
+                                getOptionLabel={(option) => option.name}
+                                loading={loadingCity}
+                                onInputChange={(_, inputValue) => {
+                                    console.log(inputValue);
+                                    //setCityName(inputValue);
+                                    //fetchCities(inputValue);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Cidade"
+                                        variant="outlined"
+                                        inputProps={{
+                                            ...params.InputProps,
+                                            endAdorment: loading ? <CircularProgress color="inherit" size={20} /> : null,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid container item direction="row" spacing={2} sx={{ mb: 2 }}>
+                        <Grid item xs={12} sm={6}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -246,10 +291,10 @@ export const PeopleDetail: React.FC = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                <Button sx={{ marginRight: 2 }} onClick={() => formRef.current?.submitForm()} variant="contained" color="primary" >
+                <Button sx={{ marginRight: 2 }} onClick={() => formRef.current?.submitForm()} variant="contained" color="inherit" >
                     Salvar
                 </Button>
-                <Button onClick={() => navigate(-1)} variant="outlined">
+                <Button onClick={() => navigate(-1)} variant="outlined" color="inherit">
                     Voltar
                 </Button>
             </VForm>
